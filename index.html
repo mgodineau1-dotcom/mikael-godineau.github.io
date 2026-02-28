@@ -99,6 +99,7 @@
       gap: clamp(10px, 2.5vw, 14px);
     }
 
+    /* Tuile standard */
     .link-item {
       display: flex;
       align-items: center;
@@ -180,6 +181,97 @@
       .link-item:hover .arrow { opacity: 1; transform: translateX(0); }
     }
 
+    /* Tuile expandable Sites Web */
+    .expandable {
+      background: var(--dark);
+      border: 1px solid #1e1e1e;
+      border-radius: 6px;
+      overflow: hidden;
+      animation: fadeUp 0.8s ease 0.25s both;
+      transition: border-color 0.3s;
+    }
+
+    .expandable:has(.sub-links.open) {
+      border-color: #2a2a2a;
+    }
+
+    .expand-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: clamp(15px, 4vw, 20px) clamp(16px, 5vw, 24px);
+      cursor: pointer;
+      min-height: clamp(58px, 14vw, 66px);
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      position: relative;
+    }
+
+    .expand-trigger::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: var(--orange);
+      transform: scaleY(0);
+      transition: transform 0.25s ease;
+    }
+
+    .expandable:has(.sub-links.open) .expand-trigger::before,
+    .expand-trigger:hover::before {
+      transform: scaleY(1);
+    }
+
+    .chevron {
+      color: var(--orange);
+      font-size: 18px;
+      transition: transform 0.3s ease;
+      flex-shrink: 0;
+      margin-left: 8px;
+    }
+
+    .sub-links.open ~ .expand-trigger .chevron,
+    .expandable.open .chevron {
+      transform: rotate(180deg);
+    }
+
+    /* Sous-liens */
+    .sub-links {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease;
+    }
+
+    .sub-links.open {
+      max-height: 200px;
+    }
+
+    .sub-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: clamp(12px, 3vw, 15px) clamp(16px, 5vw, 24px) clamp(12px, 3vw, 15px) clamp(52px, 13vw, 64px);
+      text-decoration: none;
+      color: var(--grey);
+      font-size: clamp(12px, 3vw, 13px);
+      font-weight: 400;
+      border-top: 1px solid #1a1a1a;
+      transition: color 0.2s, background 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .sub-link:hover,
+    .sub-link:active {
+      color: var(--white);
+      background: #161616;
+    }
+
+    .sub-link .sub-arrow {
+      color: var(--orange);
+      font-size: 14px;
+      opacity: 0.6;
+    }
+
     footer {
       font-size: clamp(10px, 2.5vw, 11px);
       color: #444;
@@ -206,6 +298,7 @@
 
     <div class="links">
 
+      <!-- Print & Flyers -->
       <a href="LIEN_ICI" class="link-item" target="_blank" rel="noopener">
         <div class="link-left">
           <div class="link-icon">🖨️</div>
@@ -214,18 +307,40 @@
         <span class="arrow">→</span>
       </a>
 
-      <a href="LIEN_ICI" class="link-item" target="_blank" rel="noopener">
-        <div class="link-left">
-          <div class="link-icon">🌐</div>
-          <span class="link-name">Sites Web</span>
+      <!-- Sites Web expandable -->
+      <div class="expandable" id="sitesWeb">
+        <div class="expand-trigger" onclick="toggleSites()">
+          <div class="link-left">
+            <div class="link-icon">🌐</div>
+            <span class="link-name">Sites Web</span>
+          </div>
+          <span class="chevron" id="chevron">▾</span>
         </div>
-        <span class="arrow">→</span>
-      </a>
+        <div class="sub-links" id="subLinks">
+          <a href="LIEN_SITE_1" class="sub-link" target="_blank" rel="noopener">
+            <span>Nom du site 1</span>
+            <span class="sub-arrow">→</span>
+          </a>
+          <a href="LIEN_SITE_2" class="sub-link" target="_blank" rel="noopener">
+            <span>Nom du site 2</span>
+            <span class="sub-arrow">→</span>
+          </a>
+        </div>
+      </div>
 
     </div>
 
     <footer>© 2025 Mikael Godineau</footer>
 
   </div>
+
+  <script>
+    function toggleSites() {
+      const subLinks = document.getElementById('subLinks');
+      const chevron = document.getElementById('chevron');
+      subLinks.classList.toggle('open');
+      chevron.style.transform = subLinks.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+    }
+  </script>
 </body>
 </html>
