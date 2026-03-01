@@ -103,28 +103,32 @@
       gap: clamp(10px, 2.5vw, 14px);
     }
 
-    .link-item {
+    /* Tuile expandable */
+    .expandable {
+      background: var(--tile);
+      border: 1px solid var(--tile-border);
+      border-radius: 6px;
+      overflow: hidden;
+      transition: border-color 0.3s;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .expandable:nth-child(1) { animation-delay: 0.15s; }
+    .expandable:nth-child(2) { animation-delay: 0.25s; }
+
+    .expand-trigger {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: clamp(15px, 4vw, 20px) clamp(16px, 5vw, 24px);
-      background: var(--tile);
-      border: 1px solid var(--tile-border);
-      border-radius: 6px;
-      text-decoration: none;
-      color: var(--white);
-      position: relative;
-      overflow: hidden;
-      transition: border-color 0.3s, background 0.3s;
-      animation: fadeUp 0.8s ease both;
+      cursor: pointer;
+      min-height: clamp(58px, 14vw, 66px);
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
-      min-height: clamp(58px, 14vw, 66px);
+      position: relative;
     }
 
-    .link-item:nth-child(1) { animation-delay: 0.15s; }
-
-    .link-item::before {
+    .expand-trigger::before {
       content: '';
       position: absolute;
       left: 0; top: 0; bottom: 0;
@@ -134,16 +138,10 @@
       transition: transform 0.25s ease;
     }
 
-    .link-item:hover,
-    .link-item:active {
-      background: var(--tile-hover);
-      border-color: #333;
-    }
+    .expand-trigger:hover::before { transform: scaleY(1); }
+    .expandable.open .expand-trigger::before { transform: scaleY(1); }
 
-    .link-item:hover::before,
-    .link-item:active::before {
-      transform: scaleY(1);
-    }
+    .expand-trigger:hover { background: var(--tile-hover); }
 
     .link-left {
       display: flex;
@@ -170,56 +168,6 @@
       color: var(--white);
     }
 
-    .arrow {
-      color: var(--orange);
-      font-size: clamp(16px, 4vw, 18px);
-      flex-shrink: 0;
-      margin-left: 8px;
-      opacity: 1;
-      transition: opacity 0.2s, transform 0.2s;
-    }
-
-    @media (hover: hover) {
-      .arrow { opacity: 0; transform: translateX(-6px); }
-      .link-item:hover .arrow { opacity: 1; transform: translateX(0); }
-    }
-
-    .expandable {
-      background: var(--tile);
-      border: 1px solid var(--tile-border);
-      border-radius: 6px;
-      overflow: hidden;
-      animation: fadeUp 0.8s ease 0.25s both;
-      transition: border-color 0.3s;
-    }
-
-    .expand-trigger {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: clamp(15px, 4vw, 20px) clamp(16px, 5vw, 24px);
-      cursor: pointer;
-      min-height: clamp(58px, 14vw, 66px);
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
-      position: relative;
-    }
-
-    .expand-trigger::before {
-      content: '';
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 3px;
-      background: var(--orange);
-      transform: scaleY(0);
-      transition: transform 0.25s ease;
-    }
-
-    .expandable:has(.sub-links.open) .expand-trigger::before,
-    .expand-trigger:hover::before {
-      transform: scaleY(1);
-    }
-
     .chevron {
       color: var(--orange);
       font-size: 18px;
@@ -227,6 +175,8 @@
       flex-shrink: 0;
       margin-left: 8px;
     }
+
+    .expandable.open .chevron { transform: rotate(180deg); }
 
     .sub-links {
       max-height: 0;
@@ -288,23 +238,37 @@
 
     <div class="links">
 
-      <a href="LIEN_ICI" class="link-item" target="_blank" rel="noopener">
-        <div class="link-left">
-          <div class="link-icon">🖨️</div>
-          <span class="link-name">Print & Flyers</span>
+      <!-- Print & Flyers -->
+      <div class="expandable" id="printFlyers">
+        <div class="expand-trigger" onclick="toggle('printFlyers')">
+          <div class="link-left">
+            <div class="link-icon">🖨️</div>
+            <span class="link-name">Print & Flyers</span>
+          </div>
+          <span class="chevron">▾</span>
         </div>
-        <span class="arrow">→</span>
-      </a>
+        <div class="sub-links">
+          <a href="LIEN_PRINT" class="sub-link" target="_blank" rel="noopener">
+            <span>Print</span>
+            <span class="sub-arrow">→</span>
+          </a>
+          <a href="LIEN_FLYERS" class="sub-link" target="_blank" rel="noopener">
+            <span>Flyers</span>
+            <span class="sub-arrow">→</span>
+          </a>
+        </div>
+      </div>
 
+      <!-- Sites Web -->
       <div class="expandable" id="sitesWeb">
-        <div class="expand-trigger" onclick="toggleSites()">
+        <div class="expand-trigger" onclick="toggle('sitesWeb')">
           <div class="link-left">
             <div class="link-icon">🌐</div>
             <span class="link-name">Sites Web</span>
           </div>
-          <span class="chevron" id="chevron">▾</span>
+          <span class="chevron">▾</span>
         </div>
-        <div class="sub-links" id="subLinks">
+        <div class="sub-links">
           <a href="LIEN_SITE_1" class="sub-link" target="_blank" rel="noopener">
             <span>Domaine de l'Olivier</span>
             <span class="sub-arrow">→</span>
@@ -323,11 +287,11 @@
   </div>
 
   <script>
-    function toggleSites() {
-      const subLinks = document.getElementById('subLinks');
-      const chevron = document.getElementById('chevron');
+    function toggle(id) {
+      const tile = document.getElementById(id);
+      const subLinks = tile.querySelector('.sub-links');
+      tile.classList.toggle('open');
       subLinks.classList.toggle('open');
-      chevron.style.transform = subLinks.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
     }
   </script>
 </body>
